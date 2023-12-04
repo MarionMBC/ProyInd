@@ -8,9 +8,10 @@ const multipart = require('connect-multiparty');
 const app = express();
 
 //Conectamos a la DB
-
 app.use(cors());
-conectarDB()
+conectarDB().then((val) => {
+    console.log('Conectada')
+})
 app.set('trust proxy', 1);
 
 
