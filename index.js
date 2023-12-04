@@ -6,6 +6,7 @@ const path = require('path');
 const multipart = require('connect-multiparty');
 //Creamos el servidor
 const app = express();
+require('dotenv').config()
 
 //Conectamos a la DB
 app.use(cors());
@@ -32,7 +33,7 @@ app.use('/empresa', require('./routes/empresa'));
 app.use('/admin/', require('./routes/admin'));
 app.use('/api/paginas', require('./routes/pagina'));
 
-app.listen(3000, () => {
+app.listen(process.env.PORT || 3000, () => {
     console.log('El servidor esta corriendo perfectamente');
 });
 
