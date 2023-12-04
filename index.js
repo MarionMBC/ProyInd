@@ -20,7 +20,6 @@ app.set('trust proxy', 1);
 //Se usa para ejecutar funciones middleware
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
-app.use(express.static("public"));
 
 //rutas
 
