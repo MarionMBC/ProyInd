@@ -18,12 +18,9 @@ app.set('trust proxy', 1);
 
 //Middleware
 //Se usa para ejecutar funciones middleware
-app.use(bodyParser.json({limit: '200mb'}));
-app.use(bodyParser.urlencoded({
-        limit: '200mb',
-        extended: true
-    }
-));
+app.use(express.json());
+app.use(express.urlencoded({extended: false}));
+app.use(express.static("public"));
 
 //rutas
 
