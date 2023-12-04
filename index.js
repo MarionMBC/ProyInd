@@ -28,7 +28,9 @@ app.use('/api/productos', require('./routes/producto'));
 app.use('/empresa', require('./routes/empresa'));
 app.use('/admin/', require('./routes/admin'));
 app.use('/api/paginas', require('./routes/pagina'));
-
+app.get('/', (req, res) => {
+    res.send('Hola');
+})
 app.listen(process.env.PORT || 3000, () => {
     console.log('El servidor esta corriendo perfectamente');
 });
