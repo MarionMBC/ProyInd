@@ -39,16 +39,19 @@ exports.agregar = async (req, res) => {
 exports.listar = async (req, res) => {
     try {
         let empresas = await Empresa.find();
+        console.log(empresas)
         if (empresas.length > 0) {
             let planes = await Plan.find();
             empresas.forEach(empresa => {
+                console.log(empresa)
                 planes.forEach(plan => {
+
                     if (empresa.plan == plan._id) {
                         empresa.plan = plan.nombre
                     }
                 });
             });
-            res.send({ mensaje: "empresas encontrados", listaEmpresas: empresas, acceso: 1 });
+            res.send({mensaje: "empresas encontrados", listaEmpresas: empresas, acceso: 1});
         } else {
             res.send(false);
         }
@@ -63,7 +66,7 @@ exports.obtenerEmpresa = async (req, res) => {
     try {
         let empresa = await Empresa.findById(req.params.id);
         if (empresa) {
-            res.send({ mensaje: "empresa encontrada", empresa: empresa, acceso: 1 });
+            res.send({mensaje: "empresa encontrada", empresa: empresa, acceso: 1});
         } else {
             res.send(false);
         }
@@ -75,12 +78,12 @@ exports.obtenerEmpresa = async (req, res) => {
 }
 //para esta bitacora se ocupa la info del admin que bloquea la empresa
 exports.bloquearEmpresa = async (req, res) => {
-    const { id, idAdmin } = req.body;
+    const {id, idAdmin} = req.body;
     try {
 
-        let empresa = await Empresa.findByIdAndUpdate({ _id: id }, {
+        let empresa = await Empresa.findByIdAndUpdate({_id: id}, {
             'activo': false
-        }, { new: true })
+        }, {new: true})
         if (empresa) {
 
             //bitacora
@@ -90,7 +93,7 @@ exports.bloquearEmpresa = async (req, res) => {
             let bitacora = new Bitacora(log)
             bitacora.save()
 
-            res.send({ mensaje: "empresa bloqueada", empresa: empresa, acceso: 1 });
+            res.send({mensaje: "empresa bloqueada", empresa: empresa, acceso: 1});
 
         } else {
             res.send(false);
@@ -102,11 +105,11 @@ exports.bloquearEmpresa = async (req, res) => {
 }
 //para esta bitacora se ocupa la info del admin que desbloquea la empresa
 exports.desbloquearEmpresa = async (req, res) => {
-    const { id, idAdmin } = req.body;
+    const {id, idAdmin} = req.body;
     try {
-        let empresa = await Empresa.findByIdAndUpdate({ _id: id }, {
+        let empresa = await Empresa.findByIdAndUpdate({_id: id}, {
             'activo': true
-        }, { new: true })
+        }, {new: true})
         if (empresa) {
 
             //bitacora
@@ -116,7 +119,7 @@ exports.desbloquearEmpresa = async (req, res) => {
             let bitacora = new Bitacora(log)
             bitacora.save()
 
-            res.send({ mensaje: "empresa desbloqueada", empresa: empresa, acceso: 1 });
+            res.send({mensaje: "empresa desbloqueada", empresa: empresa, acceso: 1});
         } else {
             res.send(false);
         }
@@ -128,19 +131,19 @@ exports.desbloquearEmpresa = async (req, res) => {
 //para esta bitacora se ocupa la info del admin que elimina la empresa
 exports.eliminarEmpresa = async (req, res) => {
     try {
-        const {id, idAdmin}=req.params
-        console.log(id,idAdmin)
+        const {id, idAdmin} = req.params
+        console.log(id, idAdmin)
         let empresa = await Empresa.findByIdAndRemove(id);
         if (empresa) {
 
             //bitacora
-            log.archivoViejo=JSON.stringify(empresa)
-            log.fecha=Date.now()
-            log.descripcion="Eliminación de la empresa con id: "+id
-            let bitacora=new Bitacora(log)
+            log.archivoViejo = JSON.stringify(empresa)
+            log.fecha = Date.now()
+            log.descripcion = "Eliminación de la empresa con id: " + id
+            let bitacora = new Bitacora(log)
             bitacora.save()
 
-            res.send({ mensaje: "empresa eliminada", empresa: empresa, acceso: 1 });
+            res.send({mensaje: "empresa eliminada", empresa: empresa, acceso: 1});
         } else {
             res.send(false);
         }
@@ -153,7 +156,7 @@ exports.eliminarEmpresa = async (req, res) => {
 
 exports.obtener = async (req, res) => {
     try {
-        let empresa = await Empresa.find({ 'correo': req.params.id }, { "correo": 1 })
+        let empresa = await Empresa.find({'correo': req.params.id}, {"correo": 1})
 
         res.send(empresa)
     } catch (e) {
@@ -163,9 +166,13 @@ exports.obtener = async (req, res) => {
 }
 
 exports.login = async (req, res) => {
-    const { correo, contrasena } = req.body
+    const {correo, contrasena} = req.body
     try {
-        let empresa = await Empresa.find({ "correo": correo, "contrasena": contrasena }, { "correo": 1, "contrasena": 1, "activo": 1 },)
+        let empresa = await Empresa.find({"correo": correo, "contrasena": contrasena}, {
+            "correo": 1,
+            "contrasena": 1,
+            "activo": 1
+        },)
         if (empresa[0]) {
 
             log.descripcion = "inicio de sesión exitoso de la empresa con correo: " + correo
@@ -193,7 +200,7 @@ exports.login = async (req, res) => {
 exports.seguridad = async (req, res) => {
     const idEmpresa = req.params.id
     try {
-        let empresa = await Empresa.find({ "_id": idEmpresa })
+        let empresa = await Empresa.find({"_id": idEmpresa})
         res.send(true)
         res.end()
     } catch (e) {
@@ -203,22 +210,22 @@ exports.seguridad = async (req, res) => {
 }
 
 exports.actualizarInfo = async (req, res) => {
-    const { body } = req
+    const {body} = req
     let empresa
 
     try {
-        empresa = await Empresa.findById({ _id: body.idEmpresa })
+        empresa = await Empresa.findById({_id: body.idEmpresa})
 
         //bitacora
         log.archivoViejo = empresa
 
-        empresa = await Empresa.findByIdAndUpdate({ _id: body.idEmpresa }, {
+        empresa = await Empresa.findByIdAndUpdate({_id: body.idEmpresa}, {
             'nombre': body.nombre,
             'correo': body.correo,
             'descripcion': body.descripcion,
             'contrasena': body.contrasena,
             'logo': body.logo
-        }, { new: true })
+        }, {new: true})
 
         //bitacora
         log.archivoNuevo = empresa
@@ -237,7 +244,7 @@ exports.actualizarInfo = async (req, res) => {
 exports.rellenarInfo = async (req, res) => {
     try {
         const id = req.params.id
-        const empresa = await Empresa.findById({ '_id': id })
+        const empresa = await Empresa.findById({'_id': id})
         res.send(empresa)
         res.end()
     } catch (e) {
@@ -249,7 +256,7 @@ exports.logo = async (req, res) => {
     try {
         const id = req.params.id
 
-        let logo = await Empresa.find({ "_id": id }, { "logo": 1 })
+        let logo = await Empresa.find({"_id": id}, {"logo": 1})
         res.send(logo)
         res.end()
     } catch (e) {
@@ -260,8 +267,8 @@ exports.logo = async (req, res) => {
 
 exports.aggCategoria = async (req, res) => {
     try {
-        const { idEmpresa, categoria } = req.body
-        let empresa = await Empresa.find({ '_id': idEmpresa }, { "categorias": 1 })
+        const {idEmpresa, categoria} = req.body
+        let empresa = await Empresa.find({'_id': idEmpresa}, {"categorias": 1})
 
         //bitacora
         log.archivoViejo = JSON.stringify(empresa)
@@ -271,7 +278,7 @@ exports.aggCategoria = async (req, res) => {
         let categorias = empresa[0].categorias
         categorias.push(categoria)
 
-        empresa = await Empresa.findByIdAndUpdate({ _id: idEmpresa }, { 'categorias': categorias }, { new: true })
+        empresa = await Empresa.findByIdAndUpdate({_id: idEmpresa}, {'categorias': categorias}, {new: true})
 
         log.archivoNuevo = empresa
         let bitacora = new Bitacora(log)
@@ -288,7 +295,7 @@ exports.aggCategoria = async (req, res) => {
 exports.getCategorias = async (req, res) => {
     try {
         const idEmpresa = req.params.id
-        let empresa = await Empresa.find({ '_id': idEmpresa }, { "categorias": 1 })
+        let empresa = await Empresa.find({'_id': idEmpresa}, {"categorias": 1})
         res.send(empresa)
         res.end()
     } catch (e) {
@@ -298,8 +305,8 @@ exports.getCategorias = async (req, res) => {
 }
 exports.updCategorias = async (req, res) => {
     try {
-        const { categoria, idEmpresa, seleccionado } = req.body
-        let empresa = await Empresa.find({ '_id': idEmpresa }, { "categorias": 1 })
+        const {categoria, idEmpresa, seleccionado} = req.body
+        let empresa = await Empresa.find({'_id': idEmpresa}, {"categorias": 1})
 
         //bitacora
         log.archivoViejo = JSON.stringify(empresa)
@@ -311,7 +318,7 @@ exports.updCategorias = async (req, res) => {
         categorias.splice(indice, 1)
         categorias.push(categoria)
 
-        empresa = await Empresa.findByIdAndUpdate({ _id: idEmpresa }, { 'categorias': categorias }, { new: true })
+        empresa = await Empresa.findByIdAndUpdate({_id: idEmpresa}, {'categorias': categorias}, {new: true})
 
         log.archivoNuevo = empresa
         let bitacora = new Bitacora(log)
@@ -326,12 +333,11 @@ exports.updCategorias = async (req, res) => {
 }
 
 
-
 exports.delCategorias = async (req, res) => {
     try {
-        const { idEmpresa, categoria } = req.query
+        const {idEmpresa, categoria} = req.query
 
-        let empresa = await Empresa.find({ '_id': idEmpresa }, { "categorias": 1 })
+        let empresa = await Empresa.find({'_id': idEmpresa}, {"categorias": 1})
 
         //bitacora
         log.archivoViejo = JSON.stringify(empresa)
@@ -342,7 +348,7 @@ exports.delCategorias = async (req, res) => {
         let indice = categorias.indexOf(categoria)
         categorias.splice(indice, 1)
 
-        empresa = await Empresa.findByIdAndUpdate({ _id: idEmpresa }, { 'categorias': categorias }, { new: true })
+        empresa = await Empresa.findByIdAndUpdate({_id: idEmpresa}, {'categorias': categorias}, {new: true})
 
         log.archivoNuevo = empresa
         let bitacora = new Bitacora(log)
@@ -359,7 +365,7 @@ exports.delCategorias = async (req, res) => {
 exports.getProductos = async (req, res) => {
     try {
         console.log(req.params.id)
-        const productos = await Producto.find({ 'empresa': req.params.id })
+        const productos = await Producto.find({'empresa': req.params.id})
 
         res.send(productos)
         res.end()
@@ -371,8 +377,8 @@ exports.getProductos = async (req, res) => {
 exports.CantProductos = async (req, res) => {
     try {
         console.log(req.params.id)
-        const productos = await Producto.find({ 'empresa': req.params.id })
-        res.send({ "cantidad": productos.length })
+        const productos = await Producto.find({'empresa': req.params.id})
+        res.send({"cantidad": productos.length})
         res.end()
     } catch (e) {
         res.send(e)
@@ -381,15 +387,15 @@ exports.CantProductos = async (req, res) => {
 }
 exports.actualizarProducto = async (req, res) => {
     try {
-        const { nombre, precio, categoria, descripcion, img, idProducto } = req.body
+        const {nombre, precio, categoria, descripcion, img, idProducto} = req.body
 
         //bitacora
-        let viejo = await Producto.findById({ _id: idProducto })
+        let viejo = await Producto.findById({_id: idProducto})
         log.archivoViejo = JSON.stringify(viejo)
         log.descripcion = "actualización de producto"
         log.fecha = Date.now()
 
-        let producto = await Producto.findByIdAndUpdate({ _id: idProducto }, {
+        let producto = await Producto.findByIdAndUpdate({_id: idProducto}, {
             'nombre': nombre,
             'precio': precio,
             'categoria': categoria,
@@ -410,27 +416,27 @@ exports.actualizarProducto = async (req, res) => {
 }
 exports.eliminarProducto = async (req, res) => {
     try {
-        const { idProducto, idEmpresa } = req.query
+        const {idProducto, idEmpresa} = req.query
         console.log(idProducto)
 
 
-        let empresa = await Empresa.find({ '_id': idEmpresa }, { "productos": 1 })
+        let empresa = await Empresa.find({'_id': idEmpresa}, {"productos": 1})
         let productos = empresa[0].productos
         let indice = productos.indexOf(idProducto)
 
         productos.splice(indice, 1)
 
-        empresa = await Empresa.findByIdAndUpdate({ _id: idEmpresa }, { 'productos': productos }, { new: true })
+        empresa = await Empresa.findByIdAndUpdate({_id: idEmpresa}, {'productos': productos}, {new: true})
 
         //bitacora
-        let viejo = await Producto.findById({ '_id': idProducto })
+        let viejo = await Producto.findById({'_id': idProducto})
         log.archivoViejo = JSON.stringify(viejo)
         log.fecha = Date.now()
         log.descripcion = 'eliminación de producto'
         let bitacora = new Bitacora(log)
         bitacora.save()
 
-        let producto = await Producto.remove({ '_id': idProducto })
+        let producto = await Producto.remove({'_id': idProducto})
 
         res.send(producto)
         res.end()
@@ -449,7 +455,7 @@ exports.venta = async (req, res) => {
             precio: req.body.precio,
             fecha: Date.now(),
         }
-        const producto = await Producto.findById({ '_id': req.body.idProducto }, { 'empresa': 1 })
+        const producto = await Producto.findById({'_id': req.body.idProducto}, {'empresa': 1})
         venta.idEmpresa = producto.empresa
 
         const guardar = new Venta(venta)
@@ -464,7 +470,7 @@ exports.venta = async (req, res) => {
 exports.historial = async (req, res) => {
     try {
         let idEmpresa = req.params.id
-        const historial = await Venta.find({ 'idEmpresa': idEmpresa })
+        const historial = await Venta.find({'idEmpresa': idEmpresa})
         console.log(historial)
         res.send(historial)
     } catch (e) {
@@ -479,7 +485,7 @@ exports.historial = async (req, res) => {
 exports.cantVendidosXprod = async (req, res) => {
     try {
         let idEmpresa = req.params.id
-        const cantVendidosXprod = await Venta.find({ 'idEmpresa': idEmpresa })
+        const cantVendidosXprod = await Venta.find({'idEmpresa': idEmpresa})
         console.log(cantVendidosXprod)
         res.send(cantVendidosXprod)
     } catch (e) {
@@ -491,7 +497,7 @@ exports.cantVendidosXprod = async (req, res) => {
 exports.prodVendidosXcat = async (req, res) => {
     try {
         let idEmpresa = req.params.id
-        const prodVendidosXcat = await Venta.find({ 'idEmpresa': idEmpresa })
+        const prodVendidosXcat = await Venta.find({'idEmpresa': idEmpresa})
         console.log(prodVendidosXcat)
         res.send(prodVendidosXcat)
     } catch (e) {
@@ -503,7 +509,7 @@ exports.prodVendidosXcat = async (req, res) => {
 exports.gananciasXcat = async (req, res) => {
     try {
         let idEmpresa = req.params.id
-        const gananciasXcat = await Venta.find({ 'idEmpresa': idEmpresa })
+        const gananciasXcat = await Venta.find({'idEmpresa': idEmpresa})
         console.log(gananciasXcat)
         res.send(gananciasXcat)
     } catch (e) {
@@ -515,7 +521,7 @@ exports.gananciasXcat = async (req, res) => {
 exports.top10 = async (req, res) => {
     try {
         let idEmpresa = req.params.id
-        const top10 = await Venta.find({ 'idEmpresa': idEmpresa }, { 'Nombre': 1, '_id': 0 })
+        const top10 = await Venta.find({'idEmpresa': idEmpresa}, {'Nombre': 1, '_id': 0})
         top10.sort()
         res.send(top10)
     } catch (e) {
